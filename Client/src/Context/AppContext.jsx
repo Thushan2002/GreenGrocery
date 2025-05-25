@@ -29,7 +29,7 @@ export const AppContextProvider = ({ children }) => {
     if (cartData[itemId]) {
       cartData[itemId].quantity += 1;
     } else {
-      cartData[itemId] = 1;
+      cartData[itemId] = { quantity: 1 };
     }
     setCartItems(cartData);
     toast.success("Item added to cart");
@@ -49,14 +49,16 @@ export const AppContextProvider = ({ children }) => {
   const removeCartItem = (itemId) => {
     let cartData = structuredClone(cartItems);
     if (cartData[itemId]) {
-      cartData[itemId] == -1;
-      if (cartData[itemId] === 0) {
+      cartData[itemId].quantity -= 1;
+      if (cartData[itemId].quantity <= 0) {
         delete cartData[itemId];
       }
+
+      setCartItems(cartData);
+      toast.success("Item removed from cart");
     }
-    toast.success("Item Removed from cart");
-    setCartItems(cartData);
   };
+
   useEffect(() => {
     fetchProducts();
   });

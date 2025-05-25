@@ -61,7 +61,7 @@ const ProductCard = ({ product }) => {
                   -
                 </button>
                 <span className="w-5 text-center">
-                  {cartItems[product._id]}
+                  {cartItems[product._id].quantity}
                 </span>
                 <button
                   onClick={() => addToCart(product._id)}
