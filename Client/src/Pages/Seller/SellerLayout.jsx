@@ -11,7 +11,7 @@ const SellerLayout = () => {
       path: "/seller/product-list",
       icon: assets.product_list_icon,
     },
-    { name: "Orders", path: "/seller-orders", icon: assets.order_icon },
+    { name: "Orders", path: "/seller/orders", icon: assets.order_icon },
   ];
 
   const handleLogout = () => {
