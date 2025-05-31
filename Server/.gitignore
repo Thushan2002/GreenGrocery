@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+
+# environment variables
+.env
+
+# logs
+logs/
+*.log
+
+# uploaded files (if not using Cloudinary)
+uploads/
+
+# database dumps (optional)
+dump/
+
+# misc
+.DS_Store
+npm-debug.log*
