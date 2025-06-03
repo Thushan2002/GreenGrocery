@@ -4,6 +4,7 @@ import cors from "cors"
 import connectDB from "./Configs/db.js";
 import dotenv from "dotenv";
 import userRouter from "./Routes/userRoute.js";
+import sellerRouter from "./Routes/sellerRoutes.js";
 
 dotenv.config();
 
@@ -22,8 +23,8 @@ app.use(cors({ origin: allowedOrigins, Credential: true }))
 
 app.get("/", (req, res) => { res.send("API is working") })
 app.use("/api/user", userRouter)
+app.use("/api/seller", sellerRouter)
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
-
 })
