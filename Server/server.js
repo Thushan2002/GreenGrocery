@@ -7,6 +7,7 @@ import userRouter from "./Routes/userRoute.js";
 import sellerRouter from "./Routes/sellerRoutes.js";
 import connectCloudinary from "./Configs/cloudinary.js";
 import productRouter from "./Routes/productRoutes.js";
+import cartRouter from "./Routes/cartRoute.js";
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ app.get("/", (req, res) => { res.send("API is working") })
 app.use("/api/user", userRouter)
 app.use("/api/seller", sellerRouter)
 app.use("/api/product", productRouter)
+app.use("/api/cart", cartRouter)
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
