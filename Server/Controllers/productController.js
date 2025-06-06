@@ -5,6 +5,9 @@ export const addProduct = async (req, res) => {
     try {
         let productData = JSON.parse(req.body.productData)
         const images = req.files
+        if (!images || !Array.isArray(images) || images.length === 0) {
+            return res.status(400).json({ success: false, message: "No images uploaded" });
+        }
         let imagesUrl = await Promise.all(
             images.map(async (item) => {
                 let result = await cloudinary.uploader.upload(item.path, { resource_type: "image" })
@@ -18,19 +21,22 @@ export const addProduct = async (req, res) => {
         });
     } catch (error) {
         console.log(error.message);
-        res.json({ success: true, message: error.message })
+        if (!res.headersSent) {
+            return res.status(500).json({ success: false, message: error.message });
+        }
+        return; // Always return to prevent further execution
     }
-
 };
+
 
 // Get product
 export const productList = async (req, res) => {
     try {
         const products = await Product.find({})
-        res.json({ success: true, products })
+        return res.json({ success: true, products })
     } catch (error) {
         console.log(error.message);
-        res.json({ success: true, message: error.message })
+        return res.status(500).json({ success: false, message: error.message });
     }
 }
 
@@ -39,22 +45,21 @@ export const productById = async (req, res) => {
     try {
         const { id } = req.body
         const product = await Product.findById(id)
-        res.json({ success: true, product })
+        return res.json({ success: true, product })
     } catch (error) {
         console.log(error.message);
-        res.json({ success: true, message: error.message })
+        return res.status(500).json({ success: false, message: error.message });
     }
 }
 
 // change stock
-
 export const changeStock = async (req, res) => {
     try {
         const { id, inStock } = req.body
         await Product.findByIdAndUpdate(id, { inStock })
-        res.json({ success: true, message: "stock updated" })
+        return res.json({ success: true, message: "stock updated" })
     } catch (error) {
         console.log(error.message);
-        res.json({ success: true, message: error.message })
+        return res.status(500).json({ success: false, message: error.message });
     }
 }

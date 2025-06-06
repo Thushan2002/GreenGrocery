@@ -35,6 +35,13 @@ app.use("/api/cart", cartRouter)
 app.use("/api/address", addressRouter)
 app.use("/api/order", orderRouter)
 
+app.use((err, req, res, next) => {
+    console.error('Global error handler:', err);
+    if (!res.headersSent) {
+        res.status(500).json({ success: false, message: err.message || 'Internal Server Error' });
+    }
+});
+
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 })

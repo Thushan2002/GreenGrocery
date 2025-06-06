@@ -8,11 +8,10 @@ const authSeller = async (req, res, next) => {
     try {
         const tokenCode = jwt.verify(sellerToken, process.env.JWT_SECRET);
         if (tokenCode.email === process.env.SELLER_EMAIL) {
-            next()
+            return next();
         } else {
             return res.status(401).json({ success: false, message: "Unauthorized 2" });
         }
-        next()
     } catch (error) {
         return res.status(401).json({ success: false, message: "Unauthorized 3" });
     }
