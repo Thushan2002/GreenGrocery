@@ -13,7 +13,7 @@ export const AppContextProvider = ({ children }) => {
   const currency = import.meta.env.VITE_CURRENCY;
 
   const navigate = useNavigate();
-  const [user, setUser] = useState(true);
+  const [user, setUser] = useState(null);
   const [isSeller, setIsSeller] = useState(false);
   const [showUserLogin, setShowUserLogin] = useState(false);
   const [products, setProducts] = useState([]);
@@ -34,6 +34,23 @@ export const AppContextProvider = ({ children }) => {
     } catch (error) {
       console.error("Error fetching seller authentication:", error);
       setIsSeller(false);
+    }
+  };
+
+  // fetch user status
+
+  const fetchUser = async () => {
+    try {
+      const { data } = await axios.get("/api/user/is-auth", {
+        withCredentials: true, // Required to send cookies
+      });
+      if (data.success) {
+        setUser(data.user);
+        setCartItems(data.user.cartItems || []);
+      }
+    } catch (error) {
+      setUser(null);
+      setCartItems([]);
     }
   };
 
@@ -111,9 +128,10 @@ export const AppContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    fetchUser();
     fetchProducts();
     fetchSeller();
-  });
+  }, []);
 
   const value = {
     navigate,
