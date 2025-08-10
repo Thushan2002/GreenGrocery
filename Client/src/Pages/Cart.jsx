@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAppContext } from "../Context/AppContext";
 import { assets, dummyAddress } from "../assets/greencart_assets/assets";
 import toast from "react-hot-toast";
+import { data } from "react-router-dom";
 const Cart = () => {
   const {
     user,
@@ -14,6 +15,7 @@ const Cart = () => {
     removeCartItem,
     updateCartItem,
     axios,
+    setCartItems,
   } = useAppContext();
   const [cartArray, setCartArray] = useState([]);
   const [addresses, setAddresses] = useState([]);
@@ -46,6 +48,40 @@ const Cart = () => {
     } catch (error) {
       toast.error(error.message);
       console.log("error", error.message);
+    }
+  };
+  const placeOrder = async () => {
+    console.log({
+      items: cartArray.map((item) => ({
+        product: item._id,
+        quantity: item.quantity,
+      })),
+      address: selectedAddress._id,
+    });
+
+    try {
+      if (!selectedAddress) {
+        toast.error("Please select an Addresss");
+      }
+      if (paymentOption === "COD") {
+        const { data } = await axios.post("/api/order/cod", {
+          items: cartArray.map((item) => ({
+            product: item._id,
+            quantity: item.quantity,
+          })),
+          address: selectedAddress._id,
+        });
+        if (data.success) {
+          toast.success(data.message);
+          setCartItems({});
+          navigate("/orders");
+        } else {
+          toast.error(data.message);
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+      toast.error(error.message);
     }
   };
 
@@ -236,7 +272,9 @@ const Cart = () => {
           </p>
         </div>
 
-        <button className="w-full py-3 mt-6 cursor-pointer bg-primary text-white font-medium hover:bg-primary-dull transition">
+        <button
+          onClick={paymentOption === "COD" ? placeOrder : null}
+          className="w-full py-3 mt-6 cursor-pointer bg-primary text-white font-medium hover:bg-primary-dull transition">
           {paymentOption === "COD" ? "Place Order" : "Proceed to Checkout"}
         </button>
       </div>

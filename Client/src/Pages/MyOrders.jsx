@@ -1,18 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { useAppContext } from "../Context/AppContext";
 import { dummyOrders } from "../assets/greencart_assets/assets";
+import toast from "react-hot-toast";
 
 const MyOrders = () => {
   const [myOrders, setMyOrders] = useState([]);
-  const { currency } = useAppContext();
+  const { currency, axios } = useAppContext();
 
   const fetchMyOrders = async () => {
-    setMyOrders(dummyOrders);
+    try {
+      const { data } = await axios.get("/api/order/user");
+      if (data.success) {
+        setMyOrders(data.orders);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log("error", error.message);
+      toast.error(error.message);
+    }
   };
 
   useEffect(() => {
     fetchMyOrders();
-  }, []);
+  }, [myOrders]);
 
   return (
     <div className="mt-16 pb-16">
@@ -55,13 +66,14 @@ const MyOrders = () => {
                   </div>
                 </div>
                 <div>
-                  <p>Quantity: {item.product.quantity || "1"}</p>
+                  <p>Quantity: {item.quantity || "1"}</p>
+                  <p>Unit Price: {item.product.offerPrice}</p>
                   <p>Status: {order.status}</p>
                   <p>Date: {new Date(order.createdAt).toLocaleDateString()}</p>
                 </div>
                 <p className="text-primary text-lg font-medium">
                   Amount: {currency}
-                  {item.product.price * (item.product.quantity || 1)}
+                  {item.product.offerPrice * (item.quantity || 1)}
                 </p>
               </div>
             ))}
