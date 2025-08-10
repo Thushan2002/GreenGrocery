@@ -4,8 +4,14 @@ import Address from "../Models/AddressModel.js"
 
 export const addAddress = async (req, res) => {
     try {
-        const { address, userId } = req.body
-        await Address.create({ ...address, userId })
+        const { address } = req.body
+        const userId = req.user
+        await Address.findOneAndUpdate(
+            { userId },       // Filter: find address by userId
+            { $set: address },// Update: set new address fields
+            { upsert: true, new: true } // Options: create if missing, return updated doc
+        );
+
         res.json({ success: true, message: "Address added successfully" })
     } catch (error) {
         console.log(error.message);
@@ -17,7 +23,7 @@ export const addAddress = async (req, res) => {
 
 export const getAddress = async (req, res) => {
     try {
-        const { userId } = req.body
+        const userId = req.user
         const addresses = await Address.find({ userId })
         res.json({ success: true, addresses })
     } catch (error) {

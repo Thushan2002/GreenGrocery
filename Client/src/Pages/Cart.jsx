@@ -41,9 +41,11 @@ const Cart = () => {
         }
       } else {
         toast.error(data.message);
+        console.log("error", error.message);
       }
     } catch (error) {
       toast.error(error.message);
+      console.log("error", error.message);
     }
   };
 
