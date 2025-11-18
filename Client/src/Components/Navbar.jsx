@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [loginDropdown, setLoginDropdown] = useState(false);
   const {
     user,
     setUser,
@@ -29,6 +30,15 @@ const Navbar = () => {
       }
     } catch (error) {
       toast.error(error.message);
+    }
+  };
+
+  const handleLoginOption = (type) => {
+    setLoginDropdown(false);
+    if (type === "user") {
+      setShowUserLogin(true);
+    } else if (type === "seller") {
+      navigate("/seller");
     }
   };
 
@@ -75,25 +85,74 @@ const Navbar = () => {
         </div>
 
         {!user ? (
-          <button
-            onClick={() => {
-              setOpen(false);
-              setShowUserLogin(true);
-            }}
-            className="cursor-pointer px-6 py-2 mt-2 bg-primary hover:bg-primary-dull transition text-white rounded-full text-sm">
-            Login
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setLoginDropdown(!loginDropdown)}
+              className="cursor-pointer px-6 py-2 mt-2 bg-primary hover:bg-primary-dull transition text-white rounded-full text-sm flex items-center gap-1">
+              Login
+              <svg
+                className={`w-4 h-4 transition-transform ${
+                  loginDropdown ? "rotate-180" : ""
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+
+            {/* Login Dropdown */}
+            {loginDropdown && (
+              <div className="absolute top-full right-0 mt-2 w-48 bg-white shadow-lg rounded-lg border border-gray-200 z-50">
+                <button
+                  onClick={() => handleLoginOption("user")}
+                  className="w-full text-left px-4 py-3 hover:bg-gray-50 rounded-t-lg border-b border-gray-100 transition-colors">
+                  <div className="font-medium text-gray-900">User Login</div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    Shop and place orders
+                  </div>
+                </button>
+                <button
+                  onClick={() => handleLoginOption("seller")}
+                  className="w-full text-left px-4 py-3 hover:bg-gray-50 rounded-b-lg transition-colors">
+                  <div className="font-medium text-gray-900">seller Panel</div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    Manage products & orders
+                  </div>
+                </button>
+              </div>
+            )}
+          </div>
         ) : (
           <div className="relative group cursor-pointer">
             <img src={assets.profile_icon} alt="profile" className="w-10" />
-            <ul className="absolute hidden group-hover:block bg-white shadow-md  p-2 rounded text-sm">
-              <li>
-                <NavLink to="/orders">My Orders</NavLink>
+            <ul className="absolute right-0 hidden group-hover:block bg-white shadow-md p-2 rounded text-sm w-48 z-50">
+              <li className="px-3 py-2 border-b border-gray-100">
+                <span className="text-gray-600">Welcome, {user.name}</span>
               </li>
-              <li>
+              <li className="hover:bg-gray-50 rounded">
+                <NavLink to="/orders" className="block px-3 py-2">
+                  My Orders
+                </NavLink>
+              </li>
+              {user.role === "seller" && (
+                <li className="hover:bg-gray-50 rounded">
+                  <NavLink
+                    to="/seller"
+                    className="block px-3 py-2 text-primary font-medium">
+                    seller Dashboard
+                  </NavLink>
+                </li>
+              )}
+              <li className="hover:bg-gray-50 rounded">
                 <button
                   onClick={logout}
-                  className="cursor-pointer py-1 px-3 mt-2 bg-primary hover:bg-primary-dull transition text-white rounded-full text-sm">
+                  className="cursor-pointer py-2 px-3 mt-2 bg-primary hover:bg-primary-dull transition text-white rounded-full text-sm w-full text-center">
                   Logout
                 </button>
               </li>
@@ -113,28 +172,71 @@ const Navbar = () => {
       <div
         className={`${
           open ? "flex" : "hidden"
-        } absolute top-[60px] left-0 w-full bg-white shadow-md py-4 flex-col items-start gap-2 px-5 text-sm md:hidden`}>
-        <NavLink to="/">Home</NavLink>
-        <NavLink to="/products">All Products</NavLink>
-        {user && <NavLink to="/orders">My Orders</NavLink>}
-        <NavLink to="/">Contact</NavLink>
+        } absolute top-[60px] left-0 w-full bg-white shadow-md py-4 flex-col items-start gap-2 px-5 text-sm md:hidden z-40`}>
+        <NavLink to="/" onClick={() => setOpen(false)}>
+          Home
+        </NavLink>
+        <NavLink to="/products" onClick={() => setOpen(false)}>
+          All Products
+        </NavLink>
+        {user && (
+          <NavLink to="/orders" onClick={() => setOpen(false)}>
+            My Orders
+          </NavLink>
+        )}
+        {user?.role === "seller" && (
+          <NavLink
+            to="/seller"
+            onClick={() => setOpen(false)}
+            className="text-primary font-medium">
+            seller Dashboard
+          </NavLink>
+        )}
+        <NavLink to="/" onClick={() => setOpen(false)}>
+          Contact
+        </NavLink>
+
         {!user ? (
+          <div className="flex flex-col gap-2 w-full mt-2">
+            <button
+              onClick={() => {
+                setOpen(false);
+                setShowUserLogin(true);
+              }}
+              className="cursor-pointer px-6 py-2 bg-primary hover:bg-primary-dull transition text-white rounded-full text-sm w-full text-center">
+              User Login
+            </button>
+            <button
+              onClick={() => {
+                setOpen(false);
+                navigate("/seller");
+              }}
+              className="cursor-pointer px-6 py-2 border border-primary text-primary hover:bg-primary hover:text-white transition rounded-full text-sm w-full text-center">
+              seller Panel
+            </button>
+          </div>
+        ) : (
           <button
             onClick={() => {
               setOpen(false);
-              setShowUserLogin(true);
+              logout();
             }}
-            className="cursor-pointer px-6 py-2 mt-2 bg-primary hover:bg-primary-dull transition text-white rounded-full text-sm">
-            Login
-          </button>
-        ) : (
-          <button
-            onClick={logout}
             className="cursor-pointer px-6 py-2 mt-2 bg-primary hover:bg-primary-dull transition text-white rounded-full text-sm">
             Logout
           </button>
         )}
       </div>
+
+      {/* Overlay for closing dropdowns */}
+      {(loginDropdown || open) && (
+        <div
+          className="fixed inset-0 z-30"
+          onClick={() => {
+            setLoginDropdown(false);
+            setOpen(false);
+          }}
+        />
+      )}
     </nav>
   );
 };

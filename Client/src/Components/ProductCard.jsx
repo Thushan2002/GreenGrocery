@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { assets } from "../assets/greencart_assets/assets";
 import { useAppContext } from "../Context/AppContext";
 
@@ -13,64 +13,79 @@ const ProductCard = ({ product }) => {
       onClick={() =>
         navigate(`/products/${product.category.toLowerCase()}/${product._id}`)
       }
-      className="mt-10 border border-gray-500/20 rounded-md md:px-4 px-3 py-2 bg-white min-w-56 max-w-56 w-full">
-      <div className="group cursor-pointer flex items-center justify-center px-2">
+      className="group cursor-pointer bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 w-full max-w-xs mx-auto">
+      {/* Image Container */}
+      <div className="flex items-center justify-center mb-4 h-48 overflow-hidden rounded-lg bg-gray-50">
         <img
-          className="group-hover:scale-105 transition max-w-26 md:max-w-36"
+          className="group-hover:scale-105 transition-transform duration-300 w-auto h-full object-contain"
           src={product.image[0]}
           alt={product.name}
         />
       </div>
 
-      <div className="text-gray-500/60 text-sm">
-        <p>{product.category}</p>
-        <p className="text-gray-700 font-medium text-lg truncate w-full">
-          {product.name}
+      {/* Content */}
+      <div className="space-y-2">
+        {/* Category */}
+        <p className="text-xs text-gray-500 uppercase tracking-wide">
+          {product.category}
         </p>
 
-        <div className="flex items-center gap-0.5">
-          {Array(5)
-            .fill("")
-            .map((_, i) => (
-              <img
-                key={i}
-                className="w-3 md:w-3.5"
-                src={i < 4 ? assets.star_icon : assets.star_dull_icon}
-                alt={i < 4 ? "Filled star" : "Empty star"}
-              />
-            ))}
-          <p>({product.rating})</p>
+        {/* Product Name */}
+        <h3 className="font-medium text-gray-900 line-clamp-2 leading-tight min-h-[2.5rem]">
+          {product.name}
+        </h3>
+
+        {/* Rating */}
+        <div className="flex items-center gap-1">
+          <div className="flex">
+            {Array(5)
+              .fill("")
+              .map((_, i) => (
+                <img
+                  key={i}
+                  className="w-3 h-3"
+                  src={i < 4 ? assets.star_icon : assets.star_dull_icon}
+                  alt={i < 4 ? "Filled star" : "Empty star"}
+                />
+              ))}
+          </div>
+          <span className="text-xs text-gray-600">({product.rating})</span>
         </div>
 
-        <div className="flex items-end justify-between mt-3">
-          <p className="md:text-xl text-base font-medium text-primary">
-            {currency}${product.offerPrice}{" "}
-            <span className="text-gray-500/60 md:text-sm text-xs line-through">
+        {/* Price and Add to Cart */}
+        <div className="flex items-center justify-between pt-2">
+          {/* Price */}
+          <div className="flex flex-col">
+            <span className="text-lg font-semibold text-primary">
+              {currency}${product.offerPrice}
+            </span>
+            <span className="text-xs text-gray-500 line-through">
               {currency}${product.price}
             </span>
-          </p>
+          </div>
 
-          <div onClick={(e) => e.stopPropagation()} className="text-primary">
+          {/* Add to Cart Button */}
+          <div onClick={(e) => e.stopPropagation()}>
             {!cartItems[product._id] ? (
               <button
-                className="flex items-center justify-center gap-1 bg-primary/10 border border-primary/40 md:w-[80px] w-[64px] h-[34px] rounded cursor-pointer"
+                className="flex items-center gap-2 bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary px-3 py-2 rounded-lg transition-colors duration-200 text-sm font-medium"
                 onClick={() => addToCart(product._id)}>
-                <img src={assets.cart_icon} alt="Cart icon" />
+                <img src={assets.cart_icon} alt="Cart" className="w-4 h-4" />
                 Add
               </button>
             ) : (
-              <div className="flex items-center justify-center gap-2 md:w-20 w-16 h-[34px] bg-primary/25 rounded select-none">
+              <div className="flex items-center gap-3 bg-primary/20 border border-primary/30 rounded-lg px-2 py-1">
                 <button
                   onClick={() => removeCartItem(product._id)}
-                  className="cursor-pointer text-md px-2 h-full">
+                  className="w-6 h-6 flex items-center justify-center rounded hover:bg-primary/30 transition-colors text-sm font-medium">
                   -
                 </button>
-                <span className="w-5 text-center">
+                <span className="text-sm font-medium w-6 text-center">
                   {cartItems[product._id].quantity}
                 </span>
                 <button
                   onClick={() => addToCart(product._id)}
-                  className="cursor-pointer text-md px-2 h-full">
+                  className="w-6 h-6 flex items-center justify-center rounded hover:bg-primary/30 transition-colors text-sm font-medium">
                   +
                 </button>
               </div>
