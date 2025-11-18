@@ -19,7 +19,7 @@ const port = process.env.PORT || 4000
 await connectDB()
 await connectCloudinary()
 
-const allowedOrigins = ['http://localhost:5173']
+const allowedOrigins = ['https://greengrocery-35ta.onrender.com']
 
 // middleware
 
