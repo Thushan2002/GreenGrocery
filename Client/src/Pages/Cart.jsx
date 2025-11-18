@@ -51,14 +51,6 @@ const Cart = () => {
     }
   };
   const placeOrder = async () => {
-    console.log({
-      items: cartArray.map((item) => ({
-        product: item._id,
-        quantity: item.quantity,
-      })),
-      address: selectedAddress._id,
-    });
-
     try {
       if (!selectedAddress) {
         toast.error("Please select an Addresss");
@@ -75,6 +67,19 @@ const Cart = () => {
           toast.success(data.message);
           setCartItems({});
           navigate("/orders");
+        } else {
+          toast.error(data.message);
+        }
+      } else {
+        const { data } = await axios.post("/api/order/online", {
+          items: cartArray.map((item) => ({
+            product: item._id,
+            quantity: item.quantity,
+          })),
+          address: selectedAddress._id,
+        });
+        if (data.success) {
+          window.location.replace(data.url);
         } else {
           toast.error(data.message);
         }
@@ -273,7 +278,7 @@ const Cart = () => {
         </div>
 
         <button
-          onClick={paymentOption === "COD" ? placeOrder : null}
+          onClick={placeOrder}
           className="w-full py-3 mt-6 cursor-pointer bg-primary text-white font-medium hover:bg-primary-dull transition">
           {paymentOption === "COD" ? "Place Order" : "Proceed to Checkout"}
         </button>
